@@ -23,6 +23,7 @@ contract Market is ZkDai {
 
   event OrderCreated(bytes32 orderHash, bytes32 indexed sourceToken, bytes32 indexed  targetToken, uint price);
   event OrderTaken(bytes32 orderHash, bytes32 takerNoteToMaker, bytes32 parentNote);
+  event OrderSettled(bytes32 orderHash, bytes32 takerNoteToMaker, bytes32 parentNote);
 
   function makeOrder(
     bytes32 makerViewingKey,
@@ -75,8 +76,23 @@ contract Market is ZkDai {
 
     emit OrderTaken(orderHash, tarketNoteToMaker, parentNote);
   }
-  function settleOrder() external {
 
+  function settleOrder(
+    bytes32 orderHash,
+    bytes32 takerNoteToMaker,
+    bytes32 parentNote
+  ) external {
+    // TODO: verify circuit:settleOrder
+
+    Order storage order = orders[orderHash];
+
+    require(order.state == OrderState.Taken);
+    require(notes[parentNote] == State.Spent, "Market: parent note is already spent");
+    require(notes[takerNoteToMaker] == State.Committed, "Market: taker note is not available");
+
+    notes[takerNoteToMaker] = State.Spent;
+
+    emit OrderTaken(orderHash, tarketNoteToMaker, parentNote);
   }
 
     // TODO: use zk-SNARK proofs
