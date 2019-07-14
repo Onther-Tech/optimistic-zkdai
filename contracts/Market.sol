@@ -81,6 +81,7 @@ contract Market is ZkDai {
   }
 
   function settleOrder(
+    bytes32 orderHash,
     bytes32 newNoteToMaker,
     bytes32 newNoteToTaker,
     bytes32 changeToMaker1,
