@@ -23,7 +23,7 @@ contract Market is ZkDai {
 
   event OrderCreated(bytes32 orderHash, bytes32 indexed sourceToken, bytes32 indexed  targetToken, uint price);
   event OrderTaken(bytes32 orderHash, bytes32 takerNoteToMaker, bytes32 parentNote);
-  event OrderSettled(bytes32 orderHash, bytes32 takerNoteToMaker, bytes32 parentNote);
+  event OrderSettled(bytes32 newNoteToMaker, bytes32 newNoteToTaker, bytes32 changeToMaker1, bytes32 changeToMaker2);
 
   function makeOrder(
     bytes32 makerViewingKey,
@@ -80,12 +80,11 @@ contract Market is ZkDai {
     emit OrderTaken(orderHash, tarketNoteToMaker, parentNote);
   }
 
-  function settleOrder() external {
-
   function settleOrder(
-    bytes32 orderHash,
-    bytes32 takerNoteToMaker,
-    bytes32 parentNote
+    bytes32 newNoteToMaker,
+    bytes32 newNoteToTaker,
+    bytes32 changeToMaker1,
+    bytes32 changeToMaker2
   ) external {
     // TODO: verify circuit:settleOrder
 
@@ -95,9 +94,12 @@ contract Market is ZkDai {
     require(notes[parentNote] == State.Spent, "Market: parent note is already spent");
     require(notes[takerNoteToMaker] == State.Committed, "Market: taker note is not available");
 
-    notes[takerNoteToMaker] = State.Spent;
+    notes[newNoteToMaker] = State.Spent;
+    notes[newNoteToTaker] = State.Spent;
+    notes[changeToMaker1] = State.Spent;
+    notes[changeToMaker2] = State.Spent;
 
-    emit OrderSettled(orderHash, tarketNoteToMaker, parentNote);
+    emit OrderSettled(newNoteToMaker, newNoteToTaker, changeToMaker1, changeToMaker2);
   }
 
   function hashOrder(Order storage order) internal view returns (bytes32) {
