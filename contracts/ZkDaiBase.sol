@@ -18,7 +18,7 @@ contract ZkDaiBase {
   // maps proofHash to Submission
   mapping(bytes32 => Submission) public submissions;
 
-  enum State {Invalid, Spent, Committed, Trading}
+  enum State {Invalid, Committed, Traiding, Spent}
   // maps note to State
   mapping(bytes32 => State) public notes;
 
@@ -52,7 +52,7 @@ contract ZkDaiBase {
   * @param _a Most significant 128 bits of the note hash
   * @param _b Least significant 128 bits of the note hash
   */
-  function calcNoteHash(uint _a, uint _b)
+  function calcHash(uint _a, uint _b)
     internal
     pure
     returns(bytes32 note)
