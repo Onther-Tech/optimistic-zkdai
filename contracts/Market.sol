@@ -23,7 +23,7 @@ contract Market is ZkDai {
 
   event OrderCreated(bytes32 orderHash, bytes32 indexed sourceToken, bytes32 indexed  targetToken, uint price);
   event OrderTaken(bytes32 orderHash, bytes32 takerNoteToMaker, bytes32 parentNote);
-  event OrderSettled(bytes32 newNoteToMaker, bytes32 newNoteToTaker, bytes32 changeToMaker1, bytes32 changeToMaker2);
+  event OrderSettled(bytes32 newNoteToMaker, bytes32 newNoteToTaker, bytes32 changeNoteToTaker, bytes32 changeNoteToMaker);
 
   function makeOrder(
     bytes32 makerViewingKey,
@@ -84,8 +84,8 @@ contract Market is ZkDai {
     bytes32 orderHash,
     bytes32 newNoteToMaker,
     bytes32 newNoteToTaker,
-    bytes32 changeToMaker1,
-    bytes32 changeToMaker2
+    bytes32 changeNoteToMaker,
+    bytes32 changeNoteToTaker
   ) external {
     // TODO: verify circuit:settleOrder
 
@@ -100,7 +100,7 @@ contract Market is ZkDai {
     notes[changeToMaker1] = State.Spent;
     notes[changeToMaker2] = State.Spent;
 
-    emit OrderSettled(newNoteToMaker, newNoteToTaker, changeToMaker1, changeToMaker2);
+    emit OrderSettled(newNoteToMaker, newNoteToTaker, changeNoteToMaker, changeNoteToTaker);
   }
 
   function hashOrder(Order storage order) internal view returns (bytes32) {
